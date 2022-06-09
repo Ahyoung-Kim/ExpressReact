@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
-const ShowPostList = ({apiUrl}) => {
+const ShowPostList = ({ allPost, apiUrl }) => {
   const [posts, setPosts] = useState([]);
 
   const getPosts = async() => {
     const response = await axios.get(`${apiUrl}/posts`);
-    console.log(response.data.posts)
+    //console.log(response.data.posts)
     setPosts(response.data.posts);
   }
 
@@ -31,6 +31,14 @@ const ShowPostList = ({apiUrl}) => {
       </div>
       <ul>
         {posts.map(post => (
+          <li id={post.id} key={post.id} onClick={showPost}>
+            {post.title}
+          </li>
+        ))}
+      </ul>
+      <p>======================================</p>
+      <ul>
+        {allPost.map(post => (
           <li id={post.id} key={post.id} onClick={showPost}>
             {post.title}
           </li>

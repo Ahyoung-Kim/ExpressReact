@@ -1,65 +1,27 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
+const cors = require('cors');
 const bodyParser = require('body-parser');
-const { get, json } = require('express/lib/response');
-const app = express();
 const PORT = 4000;
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+const app = express();
+
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extends: false }));
+app.use(cors());
 
 
-// ================ GET ==============================
-// 호스트 - path: localhost:4000/api
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+// ======================= Server API URL ====================
+// http://localhost:4000/api
+
+
+// ======================== GET =============================
 app.get('/api', (req, res) => {
-  res.json({host: 'ahyoung'})
+  res.send({host: 'ahyoung'});
 })
 
-const users = [
-  {id: 1, name: 'kim'},
-  {id: 2, name: 'lee'},
-  {id: 3, name: 'park'}
-]
-
-// 유저 전체 - path: localhost:4000/api/users
-app.get('/api/users', (req, res) => {
-  res.json({users: users});
-})
-
-// 유저 - path: localhost:4000/api/users/:user_id
-// path variable  - req.params.user_id
-// 쿼리 스트링(?user_id=1) - req.query.user_id
-// app.get('/api/users/:user_id', (req, res) => {
-//   const user_id = req.params.user_id;
-//   const user = users.filter(data => data.id == user_id)
-//   res.json({user: user});
-// })
-app.get('/api/users/user', (req, res) => {
-  const user_id = req.query.user_id;
-  const user = users.filter(data => data.id == user_id)
-  res.json({user: user});
-})
-
-// ======================= POST =========================
-// app.post('/api/users/post', (req, res) => {
-//   const {id, name} = req.body;
-//   const newUsers = users.concat({id, name});
-//   users = newUsers;
-//   res.json({users: newUsers});
-// })
-
-// // ======================= DELETE ========================
-// app.delete("/api/delete/:user_id", (req, res) => {
-//   const user_id = req.params.user_id;
-//   const newUsers = users.filter(data => data.id != user_id);
-//   users = newUsers;
-//   res.json({users: newUsers});
-// })
-
-
-// ====================== 게시글 =============================
 const posts = [
   {
     id: 1,
@@ -72,6 +34,7 @@ const posts = [
     contents: "본문2"
   }
 ]
+
 app.get('/api/posts', (req, res) => {
   res.json({posts: posts});
 })
@@ -82,15 +45,30 @@ app.get('/api/post/:post_id', (req, res) => {
   res.json({post: post});
 })
 
+let id = 3;
 
-app.post('/api/write', (req, res) => {
-  const {id, title, contents} = req.body;
-  posts = posts.concat({id, title, contents});
-  res.json({posts: posts});
+app.get('/api/get/postid', (req, res) => {
+  const post_id = id;
+  res.json({id: post_id});
 })
 
-// =============================================================
+// ======================= POST ============================
+app.post('/api/post', (req, res) => {
+  console.log('서버에서 post 성공! : ', req.body);
+  res.json(req.body);
+})
 
-app.listen(PORT, function(){
-  console.log(`Server on ${PORT}`);
+app.post('/api/newpost', (req, res) => {
+  console.log('서버에서 포스팅: ', req.body);
+  id += 1;
+  res.json(req.body);
+})
+
+app.listen(PORT, () => {
+  console.log(`server is running on ${PORT}`);
+})
+
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
 })

@@ -13,9 +13,9 @@ const ShowPost = ({apiUrl}) => {
       .then(data => {
         console.log(data[0])
         setPost(data[0])
-        console.log(post)
       })
   }, []);
+
 
   if(!params.post_id){
     return (

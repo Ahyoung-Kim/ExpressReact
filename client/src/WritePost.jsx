@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SubmitComp = React.memo(({onSubmit}) => (
   <div>
@@ -7,7 +8,7 @@ const SubmitComp = React.memo(({onSubmit}) => (
   </div>
 ))
 
-const WritePost = ({apiUrl}) => {
+const WritePost = ({ newId, setNewId, posts, setPosts, apiUrl }) => {
   const [inputs, setInputs] = useState({
     title: '',
     contents: ''
@@ -35,26 +36,36 @@ const WritePost = ({apiUrl}) => {
     }
   }
 
-  const onSubmit = () => {
-    console.log('submit..')
-    // axios.post(`${apiUrl}/write`, {
-    //   id: 3,
-    //   title: title,
-    //   contents: contents
-    // }).then(res => {console.log(res)})
-    const options = {
-      method: 'post',
-      headers: {
-        'Content-Type': "application/json; charset=utf-8"
-      },
-      body: JSON.stringify({
-        id: 3,
-        title: title,
-        contents: contents
-      })
+  const getID = async() => {
+    const res = await axios.get(`${apiUrl}/get/postid`)
+    console.log('id: ', res.data.id);
+    setNewId(res.data.id);
+  }
+
+  const newPost = async() => {
+
+    const body = {
+      id: newId,
+      title: title,
+      contents: contents
     }
-    fetch(`${apiUrl}/write`, options)
-      .then(res => {console.log(res)})
+
+    console.log(body);
+
+    const res = await axios.post('http://localhost:4000/api/newpost', body);
+    console.log('res.data: ', res.data);
+
+    setPosts(posts.concat(res.data));
+    setNewId(newId + 1);
+  }
+
+  const navigate = useNavigate();
+  const goHome = () => {
+    navigate('/');
+  }
+  const onSubmit = () => {
+    newPost();
+    goHome();
   }
 
   return (
