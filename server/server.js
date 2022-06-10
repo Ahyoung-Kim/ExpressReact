@@ -1,14 +1,14 @@
+require('dotenv').config();
+const { PORT, DBURL } = process.env;
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const PORT = 4000;
 const postModel = require('./model/post');
 
-const mongoose = require('mongoose');
 
-const pwd = 'zkscydusen314!';
-const url = `mongodb+srv://ahyoung:${pwd}@post.stk6lf7.mongodb.net/?retryWrites=true&w=majority`;
+const mongoose = require('mongoose');
 
 let db = mongoose.connection;
 db.on('error', console.error);
@@ -16,7 +16,7 @@ db.once('open', () => {
   console.log('MongoDB is connected');
 })
 
-mongoose.connect(url, {
+mongoose.connect(DBURL, {
   useUnifiedTopology: true,
   useNewUrlParser: true
 })
