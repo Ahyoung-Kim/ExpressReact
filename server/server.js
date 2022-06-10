@@ -3,6 +3,23 @@ const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const PORT = 4000;
+const postModel = require('./model/post');
+
+const mongoose = require('mongoose');
+
+const pwd = 'zkscydusen314!';
+const url = `mongodb+srv://ahyoung:${pwd}@post.stk6lf7.mongodb.net/?retryWrites=true&w=majority`;
+
+let db = mongoose.connection;
+db.on('error', console.error);
+db.once('open', () => {
+  console.log('MongoDB is connected');
+})
+
+mongoose.connect(url, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true
+})
 
 const app = express();
 
@@ -22,47 +39,76 @@ app.get('/api', (req, res) => {
   res.send({host: 'ahyoung'});
 })
 
-const posts = [
-  {
-    id: 1,
-    title: "제목1",
-    contents: "본문1"
-  },
-  {
-    id: 2,
-    title: "제목2",
-    contents: "본문2"
-  }
-]
 
-app.get('/api/posts', (req, res) => {
-  res.json({posts: posts});
+// ======================== MongoDB ==========================
+
+// ========================== GET ===========================
+app.get('/api/list', (req, res) => {
+  db.collection('post').find().toArray((err, rslt) => {
+    //res.render('list.ejs', {posts: rslt});
+    res.send({posts: rslt});
+  })
 })
 
-app.get('/api/post/:post_id', (req, res) => {
+app.get('/api/list/:post_id', (req, res) => {
   const post_id = req.params.post_id;
-  const post = posts.filter(data => data.id == post_id);
-  res.json({post: post});
+
+  db.collection('post').findOne({ _id: post_id }, (err, post) => {
+    console.log(post_id, '읽기...')
+    if(err){
+      console.log(err);
+    } else {
+      console.log('post: ', post);
+    }
+  })
 })
 
-let id = 3;
-
-app.get('/api/get/postid', (req, res) => {
-  const post_id = id;
-  res.json({id: post_id});
+app.get('/api/input', (req, res) => {
+  res.sendFile(__dirname + '/input.html');
 })
 
-// ======================= POST ============================
+
+// ========================= POST ===============================
 app.post('/api/post', (req, res) => {
-  console.log('서버에서 post 성공! : ', req.body);
-  res.json(req.body);
+  console.log(req.body);
+  const {title, contents} = req.body;
+
+  var post = new postModel();
+  post.title = title;
+  post.contents = contents;
+  console.log(post)
+  db.collection('post').insertOne(post, () => {
+    console.log('저장완료')
+  })
+  res.send('post test 성공')
 })
 
-app.post('/api/newpost', (req, res) => {
-  console.log('서버에서 포스팅: ', req.body);
-  id += 1;
-  res.json(req.body);
+
+// ====================== DELETE ===============================
+app.delete('/api/delete/:post_id', (req, res) => {
+  const post_id = req.params.post_id;
+  console.log(post_id);
+  res.send('post delete')
 })
+// app.delete('/api/delete/:post_id', (req, res) => {
+//   const post_id = req.params.post_id;
+  
+//   postModel.deleteOne({ _id: post_id })
+//     .then(output => {
+//       if(output.n == 0){
+//         return res.status(404).json({message: 'post not found'});
+//       }
+//       console.log('delete 완료')
+//       return res.status(200).json({
+//         message: 'delete success'
+//       })
+//     })
+//     .catch(err => {
+//       return res.status(500).json({
+//         message: err
+//       })
+//     })
+// })
 
 app.listen(PORT, () => {
   console.log(`server is running on ${PORT}`);

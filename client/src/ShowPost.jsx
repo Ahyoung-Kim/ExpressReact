@@ -7,8 +7,8 @@ const ShowPost = ({apiUrl}) => {
   const [post, setPost] = useState({});
 
   useEffect(()=>{
-    console.log('params: ', params)
-    axios.get(`${apiUrl}/post/${params.post_id}`)
+    console.log(params.post_id);
+    axios.get(`${apiUrl}/list/${params.post_id}`)
       .then(res => res.data.post)
       .then(data => {
         console.log(data[0])

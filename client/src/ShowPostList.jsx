@@ -5,14 +5,14 @@ import { Link, useNavigate } from 'react-router-dom';
 const ShowPostList = ({ allPost, apiUrl }) => {
   const [posts, setPosts] = useState([]);
 
-  const getPosts = async() => {
-    const response = await axios.get(`${apiUrl}/posts`);
-    //console.log(response.data.posts)
-    setPosts(response.data.posts);
+  const getDBPosts = async() => {
+    const res = await axios.get(`${apiUrl}/list`);
+    console.log('db get: ', res.data.posts);
+    setPosts(res.data.posts)
   }
 
   useEffect(()=>{
-    getPosts();
+    getDBPosts();
   }, []);
 
   const navigate = useNavigate();
@@ -24,6 +24,13 @@ const ShowPostList = ({ allPost, apiUrl }) => {
     navigate('/write');
   }
 
+  const onDelete = (e) => {
+    const post_id = e.target.id;
+
+    axios.delete(`${apiUrl}/delete/${post_id}`)
+      .then(res => {console.log(res)});
+  }
+
   return (
     <>
       <div>
@@ -31,19 +38,20 @@ const ShowPostList = ({ allPost, apiUrl }) => {
       </div>
       <ul>
         {posts.map(post => (
-          <li id={post.id} key={post.id} onClick={showPost}>
-            {post.title}
+          <li key={post._id}>
+            <span id={post._id} onClick={showPost}>{post.title}</span>
+            <button id={post._id} type='button' onClick={onDelete}>삭제</button>
           </li>
         ))}
       </ul>
-      <p>======================================</p>
+      {/* <p>======================================</p>
       <ul>
         {allPost.map(post => (
           <li id={post.id} key={post.id} onClick={showPost}>
             {post.title}
           </li>
         ))}
-      </ul>
+      </ul> */}
     </>
   );
 };

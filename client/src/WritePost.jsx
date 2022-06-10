@@ -43,20 +43,18 @@ const WritePost = ({ newId, setNewId, posts, setPosts, apiUrl }) => {
   }
 
   const newPost = async() => {
-
     const body = {
-      id: newId,
       title: title,
       contents: contents
     }
 
     console.log(body);
 
-    const res = await axios.post('http://localhost:4000/api/newpost', body);
+    const res = await axios.post(`${apiUrl}/post`, body);
     console.log('res.data: ', res.data);
 
     setPosts(posts.concat(res.data));
-    setNewId(newId + 1);
+    //setNewId(newId + 1);
   }
 
   const navigate = useNavigate();

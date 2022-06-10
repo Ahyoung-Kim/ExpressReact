@@ -1,19 +1,17 @@
-const mysql = require('mysql');
-const password = process.env.DATABASE_SPRINT_PASSWORD;
+const mongoose = require('mongoose');
 
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: password,
-  database: 'my_db',
-  port: '3308'
-});
+const pwd = 'zkscydusen314!';
+const url = `mongodb+srv://ahyoung:${pwd}@post.stk6lf7.mongodb.net/?retryWrites=true&w=majority`;
 
-db.connect();
-
-db.query('SELECT * FROM test', (error, result) => {
-  if(error){
-    return console.log(error, 'check');
-  }
-  console.log(result);
+let db = mongoose.connection;
+db.on('error', console.error);
+db.once('open', () => {
+  console.log('MongoDB is connected');
 })
+
+mongoose.connect(url, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true
+})
+
+module.exports = mongoose;
