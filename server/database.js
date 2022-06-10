@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+require('dotenv').config();
+const { DBURL } = process.env;
 
-const pwd = 'zkscydusen314!';
-const url = `mongodb+srv://ahyoung:${pwd}@post.stk6lf7.mongodb.net/?retryWrites=true&w=majority`;
+const mongoose = require('mongoose');
 
 let db = mongoose.connection;
 db.on('error', console.error);
@@ -9,7 +9,7 @@ db.once('open', () => {
   console.log('MongoDB is connected');
 })
 
-mongoose.connect(url, {
+mongoose.connect(DBURL, {
   useUnifiedTopology: true,
   useNewUrlParser: true
 })
