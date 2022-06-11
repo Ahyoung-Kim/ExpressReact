@@ -7,12 +7,10 @@ const ShowPost = ({apiUrl}) => {
   const [post, setPost] = useState({});
 
   useEffect(()=>{
-    console.log(params.post_id);
     axios.get(`${apiUrl}/list/${params.post_id}`)
       .then(res => res.data.post)
       .then(data => {
-        console.log(data[0])
-        setPost(data[0])
+        setPost(data);
       })
   }, []);
 

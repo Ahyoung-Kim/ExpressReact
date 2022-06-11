@@ -52,13 +52,16 @@ app.get('/api/list', (req, res) => {
 
 app.get('/api/list/:post_id', (req, res) => {
   const post_id = req.params.post_id;
+  // const ObjectId = require('mongodb').ObjectId;
+  // const o_id = new ObjectId(post_id);
 
-  db.collection('post').findOne({ _id: post_id }, (err, post) => {
+  db.collection('post').findOne({ _id : post_id }, (err, post) => {
     console.log(post_id, '읽기...')
     if(err){
       console.log(err);
     } else {
       console.log('post: ', post);
+      res.json({post: post});
     }
   })
 })
@@ -81,6 +84,21 @@ app.post('/api/post', (req, res) => {
     console.log('저장완료')
   })
   res.send('post test 성공')
+})
+
+
+// ===================== UPDATE ================================
+app.patch('/api/edit/:post_id', (req, res) => {
+  const post_id = req.params.post_id;
+  const updates = Object.keys(req.body);
+  const allowed = ['title', 'contents'];
+  const isValid = updates.every(update => allowed.includes(update));
+
+  if(!isValid){
+    return console.log('에러');
+  }
+
+  
 })
 
 
